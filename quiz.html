@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>German Unification Quiz</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #000000, #dd0000, #ffce00);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.container {
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(10px);
+    width: 95%;
+    max-width: 650px;
+    padding: 35px;
+    border-radius: 20px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+    animation: fadeIn 0.6s ease;
+}
+
+h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    line-height: 1.4;
+}
+
+.progress-bar {
+    height: 8px;
+    background: #eee;
+    border-radius: 5px;
+    margin-bottom: 25px;
+    overflow: hidden;
+}
+
+.progress {
+    height: 100%;
+    width: 0%;
+    background: #dd0000;
+    transition: width 0.4s ease;
+}
+
+.option {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 12px;
+    border: none;
+    border-radius: 12px;
+    background: #f3f3f3;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.option:hover {
+    background: #ffce00;
+    transform: translateY(-2px);
+}
+
+#explanation {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #333;
+    min-height: 40px;
+}
+
+button.next {
+    width: 100%;
+    padding: 14px;
+    margin-top: 20px;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    background: #000;
+    color: white;
+}
+
+button.next:hover {
+    background: #222;
+    transform: translateY(-2px);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="progress-bar">
+        <div class="progress" id="progress"></div>
+    </div>
+
+    <h2 id="question"></h2>
+
+    <div id="options"></div>
+
+    <div id="explanation"></div>
+
+    <button class="next" onclick="nextQuestion()">Next</button>
+
+</div>
+
+<!-- Load question bank FIRST -->
+<script src="questions.js"></script>
+
+<script>
+
+// Shuffle and pick 10 random questions
+let selectedQuestions = [...questionBank]
+.sort(() => 0.5 - Math.random())
+.slice(0, 10);
+
+let currentQuestion = 0;
+let score = 0;
+
+function loadQuestion() {
+    const q = selectedQuestions[currentQuestion];
+
+    document.getElementById("question").innerText = q.question;
+    document.getElementById("options").innerHTML = "";
+    document.getElementById("explanation").innerText = "";
+
+    document.getElementById("progress").style.width =
+        ((currentQuestion) / 10) * 100 + "%";
+
+    q.options.forEach((option, index) => {
+        let btn = document.createElement("button");
+        btn.innerText = option;
+        btn.className = "option";
+        btn.onclick = () => selectAnswer(index);
+        document.getElementById("options").appendChild(btn);
+    });
+}
+
+function selectAnswer(index) {
+    const q = selectedQuestions[currentQuestion];
+
+    if (index === q.answer) {
+        score++;
+    }
+
+    document.getElementById("explanation").innerText = q.explanation;
+
+    Array.from(document.getElementsByClassName("option"))
+        .forEach(btn => btn.disabled = true);
+}
+
+function nextQuestion() {
+    currentQuestion++;
+
+    if (currentQuestion < 10) {
+        loadQuestion();
+    } else {
+        finishQuiz();
+    }
+}
+
+function finishQuiz() {
+
+    let username = prompt("Enter your name for the leaderboard:");
+    if (!username) username = "Anonymous";
+
+    let scores = JSON.parse(localStorage.getItem("quizScores")) || [];
+    scores.push({ username, score });
+    localStorage.setItem("quizScores", JSON.stringify(scores));
+
+    document.querySelector(".container").innerHTML = `
+        <h2>Quiz Complete!</h2>
+        <p style="margin:15px 0;font-size:18px;font-weight:600;">
+        Your Score: ${score}/10
+        </p>
+        <button class="next" onclick="window.print()">Print Certificate</button>
+        <button class="next" onclick="location.href='leaderboard.html'">
+        View Leaderboard
+        </button>
+    `;
+
+    document.getElementById("progress").style.width = "100%";
+}
+
+loadQuestion();
+
+</script>
+
+</body>
+</html>
+
