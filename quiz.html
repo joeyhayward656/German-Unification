@@ -8,226 +8,269 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Inter', sans-serif;
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Inter',sans-serif;
 }
 
-body {
-    min-height: 100vh;
-    background: linear-gradient(135deg, #000000, #dd0000, #ffce00);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
+body{
+min-height:100vh;
+background:linear-gradient(135deg,#000000,#dd0000,#ffce00);
+display:flex;
+justify-content:center;
+align-items:center;
+padding:20px;
+overflow:hidden;
 }
 
-.container {
-    background: rgba(255,255,255,0.96);
-    backdrop-filter: blur(12px);
-    width: 95%;
-    max-width: 650px;
-    padding: 35px;
-    border-radius: 20px;
-    box-shadow: 0 25px 60px rgba(0,0,0,0.35);
-    animation: fadeIn 0.5s ease;
+.container{
+background:rgba(255,255,255,0.96);
+backdrop-filter:blur(12px);
+width:95%;
+max-width:650px;
+padding:35px;
+border-radius:20px;
+box-shadow:0 25px 60px rgba(0,0,0,0.35);
+transition:opacity .4s ease, transform .4s ease;
 }
 
-h2 {
-    font-size: 22px;
-    font-weight: 700;
-    margin-bottom: 20px;
-    line-height: 1.4;
+.fade-out{
+opacity:0;
+transform:translateY(20px);
 }
 
-.progress-bar {
-    height: 8px;
-    background: #eee;
-    border-radius: 5px;
-    margin-bottom: 25px;
-    overflow: hidden;
+h2{
+font-size:22px;
+font-weight:700;
+margin-bottom:20px;
+line-height:1.4;
 }
 
-.progress {
-    height: 100%;
-    width: 0%;
-    background: #dd0000;
-    transition: width 0.4s ease;
+.progress-bar{
+height:8px;
+background:#eee;
+border-radius:5px;
+margin-bottom:25px;
+overflow:hidden;
 }
 
-.option {
-    display: block;
-    width: 100%;
-    padding: 14px;
-    margin-bottom: 12px;
-    border: none;
-    border-radius: 12px;
-    background: #f3f3f3;
-    cursor: pointer;
-    font-size: 15px;
-    font-weight: 600;
-    transition: all 0.2s ease;
+.progress{
+height:100%;
+width:0%;
+background:#dd0000;
+transition:width .4s ease;
 }
 
-.option:hover {
-    background: #ffce00;
-    transform: translateY(-2px);
+.option{
+display:block;
+width:100%;
+padding:14px;
+margin-bottom:12px;
+border:none;
+border-radius:12px;
+background:#f3f3f3;
+cursor:pointer;
+font-size:15px;
+font-weight:600;
+transition:all .2s ease;
 }
 
-.option.correct {
-    background: #4CAF50;
-    color: white;
+.option:hover{
+background:#ffce00;
+transform:translateY(-2px);
 }
 
-.option.wrong {
-    background: #e53935;
-    color: white;
+.option.correct{
+background:#4CAF50;
+color:white;
 }
 
-.option:disabled {
-    cursor: default;
+.option.wrong{
+background:#e53935;
+color:white;
 }
 
-#explanation {
-    margin-top: 15px;
-    font-size: 14px;
-    color: #333;
-    min-height: 40px;
+.option:disabled{
+cursor:default;
 }
 
-button.next {
-    width: 100%;
-    padding: 14px;
-    margin-top: 20px;
-    border: none;
-    border-radius: 12px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    background: #000;
-    color: white;
-    display: none;
+#explanation{
+margin-top:15px;
+font-size:14px;
+min-height:40px;
 }
 
-button.next:hover {
-    background: #222;
-    transform: translateY(-2px);
+button.next{
+width:100%;
+padding:14px;
+margin-top:20px;
+border:none;
+border-radius:12px;
+font-size:15px;
+font-weight:600;
+cursor:pointer;
+background:#000;
+color:white;
+display:none;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+button.next:hover{
+background:#222;
+}
+
+.confetti{
+position:fixed;
+width:10px;
+height:10px;
+background:red;
+top:-10px;
+animation:fall 3s linear forwards;
+}
+
+@keyframes fall{
+to{
+transform:translateY(110vh) rotate(720deg);
+opacity:0;
+}
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="container" id="quizBox">
 
-    <div class="progress-bar">
-        <div class="progress" id="progress"></div>
-    </div>
+<div class="progress-bar">
+<div class="progress" id="progress"></div>
+</div>
 
-    <h2 id="question"></h2>
+<h2 id="question"></h2>
+<div id="options"></div>
+<div id="explanation"></div>
 
-    <div id="options"></div>
-
-    <div id="explanation"></div>
-
-    <button class="next" id="nextBtn" onclick="nextQuestion()">Next</button>
+<button class="next" id="nextBtn" onclick="nextQuestion()">Next</button>
 
 </div>
 
-<!-- Load questions first -->
 <script src="questions.js"></script>
 
 <script>
 
-let selectedQuestions = [...questionBank]
-    .sort(() => 0.5 - Math.random())
-    .slice(0, 10);
+let selectedQuestions=[...questionBank]
+.sort(()=>0.5-Math.random())
+.slice(0,10);
 
-let currentQuestion = 0;
-let score = 0;
+let currentQuestion=0;
+let score=0;
 
-function loadQuestion() {
-    const q = selectedQuestions[currentQuestion];
+function loadQuestion(){
 
-    document.getElementById("question").innerText = q.question;
-    document.getElementById("options").innerHTML = "";
-    document.getElementById("explanation").innerText = "";
-    document.getElementById("nextBtn").style.display = "none";
+const box=document.getElementById("quizBox");
+box.classList.remove("fade-out");
 
-    document.getElementById("progress").style.width =
-        (currentQuestion / 10) * 100 + "%";
+const q=selectedQuestions[currentQuestion];
 
-    q.options.forEach((option, index) => {
-        let btn = document.createElement("button");
-        btn.innerText = option;
-        btn.className = "option";
-        btn.onclick = () => selectAnswer(index);
-        document.getElementById("options").appendChild(btn);
-    });
+document.getElementById("question").innerText=q.question;
+document.getElementById("options").innerHTML="";
+document.getElementById("explanation").innerText="";
+document.getElementById("nextBtn").style.display="none";
+
+document.getElementById("progress").style.width=
+(currentQuestion/10)*100+"%";
+
+q.options.forEach((option,index)=>{
+let btn=document.createElement("button");
+btn.innerText=option;
+btn.className="option";
+btn.onclick=()=>selectAnswer(index);
+document.getElementById("options").appendChild(btn);
+});
 }
 
-function selectAnswer(index) {
-    const q = selectedQuestions[currentQuestion];
-    const buttons = Array.from(document.getElementsByClassName("option"));
+function selectAnswer(index){
 
-    buttons.forEach((btn, i) => {
-        btn.disabled = true;
+const q=selectedQuestions[currentQuestion];
+const buttons=[...document.getElementsByClassName("option")];
 
-        if (i === q.answer) {
-            btn.classList.add("correct");
-        }
+buttons.forEach((btn,i)=>{
+btn.disabled=true;
+if(i===q.answer) btn.classList.add("correct");
+if(i===index && index!==q.answer) btn.classList.add("wrong");
+});
 
-        if (i === index && index !== q.answer) {
-            btn.classList.add("wrong");
-        }
-    });
+if(index===q.answer) score++;
 
-    if (index === q.answer) {
-        score++;
-    }
-
-    document.getElementById("explanation").innerText = q.explanation;
-    document.getElementById("nextBtn").style.display = "block";
+document.getElementById("explanation").innerText=q.explanation;
+document.getElementById("nextBtn").style.display="block";
 }
 
-function nextQuestion() {
-    currentQuestion++;
+function nextQuestion(){
 
-    if (currentQuestion < 10) {
-        loadQuestion();
-    } else {
-        finishQuiz();
-    }
+const box=document.getElementById("quizBox");
+box.classList.add("fade-out");
+
+setTimeout(()=>{
+currentQuestion++;
+if(currentQuestion<10){
+loadQuestion();
+}else{
+finishQuiz();
+}
+},400);
 }
 
-function finishQuiz() {
+function animateScore(finalScore){
+let count=0;
+const scoreEl=document.getElementById("animatedScore");
+const interval=setInterval(()=>{
+scoreEl.innerText=count;
+count++;
+if(count>finalScore){
+clearInterval(interval);
+}
+},80);
+}
 
-    let username = prompt("Enter your name for the leaderboard:");
-    if (!username) username = "Anonymous";
+function launchConfetti(){
+for(let i=0;i<80;i++){
+let conf=document.createElement("div");
+conf.className="confetti";
+conf.style.left=Math.random()*100+"vw";
+conf.style.background=
+["#ffce00","#dd0000","#000000"][Math.floor(Math.random()*3)];
+conf.style.animationDuration=(Math.random()*2+2)+"s";
+document.body.appendChild(conf);
+setTimeout(()=>conf.remove(),3000);
+}
+}
 
-    let scores = JSON.parse(localStorage.getItem("quizScores")) || [];
-    scores.push({ username, score });
-    localStorage.setItem("quizScores", JSON.stringify(scores));
+function finishQuiz(){
 
-    document.querySelector(".container").innerHTML = `
-        <h2>Quiz Complete!</h2>
-        <p style="margin:15px 0;font-size:18px;font-weight:600;">
-        Your Score: ${score}/10
-        </p>
-        <button class="next" style="display:block" onclick="window.print()">Print Certificate</button>
-        <button class="next" style="display:block" onclick="location.href='leaderboard.html'">
-        View Leaderboard
-        </button>
-    `;
+let username=prompt("Enter your name for the leaderboard:");
+if(!username) username="Anonymous";
 
-    document.getElementById("progress").style.width = "100%";
+let scores=JSON.parse(localStorage.getItem("quizScores"))||[];
+scores.push({username,score});
+localStorage.setItem("quizScores",JSON.stringify(scores));
+
+document.getElementById("progress").style.width="100%";
+
+document.querySelector(".container").innerHTML=`
+<h2>Quiz Complete!</h2>
+<p style="margin:15px 0;font-size:18px;font-weight:600;">
+Your Score: <span id="animatedScore">0</span>/10
+</p>
+<button class="next" style="display:block" onclick="window.print()">Print Certificate</button>
+<button class="next" style="display:block" onclick="location.href='leaderboard.html'">View Leaderboard</button>
+`;
+
+animateScore(score);
+
+if(score>=8){
+launchConfetti();
+}
 }
 
 loadQuestion();
@@ -236,5 +279,3 @@ loadQuestion();
 
 </body>
 </html>
-
-
