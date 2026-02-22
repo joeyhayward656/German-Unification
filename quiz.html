@@ -26,13 +26,13 @@ body {
 
 .container {
     background: rgba(255,255,255,0.96);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(12px);
     width: 95%;
     max-width: 650px;
     padding: 35px;
     border-radius: 20px;
-    box-shadow: 0 25px 60px rgba(0,0,0,0.3);
-    animation: fadeIn 0.6s ease;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.35);
+    animation: fadeIn 0.5s ease;
 }
 
 h2 {
@@ -68,12 +68,26 @@ h2 {
     cursor: pointer;
     font-size: 15px;
     font-weight: 600;
-    transition: 0.2s;
+    transition: all 0.2s ease;
 }
 
 .option:hover {
     background: #ffce00;
     transform: translateY(-2px);
+}
+
+.option.correct {
+    background: #4CAF50;
+    color: white;
+}
+
+.option.wrong {
+    background: #e53935;
+    color: white;
+}
+
+.option:disabled {
+    cursor: default;
 }
 
 #explanation {
@@ -94,6 +108,7 @@ button.next {
     cursor: pointer;
     background: #000;
     color: white;
+    display: none;
 }
 
 button.next:hover {
@@ -122,19 +137,18 @@ button.next:hover {
 
     <div id="explanation"></div>
 
-    <button class="next" onclick="nextQuestion()">Next</button>
+    <button class="next" id="nextBtn" onclick="nextQuestion()">Next</button>
 
 </div>
 
-<!-- Load question bank FIRST -->
+<!-- Load questions first -->
 <script src="questions.js"></script>
 
 <script>
 
-// Shuffle and pick 10 random questions
 let selectedQuestions = [...questionBank]
-.sort(() => 0.5 - Math.random())
-.slice(0, 10);
+    .sort(() => 0.5 - Math.random())
+    .slice(0, 10);
 
 let currentQuestion = 0;
 let score = 0;
@@ -145,9 +159,10 @@ function loadQuestion() {
     document.getElementById("question").innerText = q.question;
     document.getElementById("options").innerHTML = "";
     document.getElementById("explanation").innerText = "";
+    document.getElementById("nextBtn").style.display = "none";
 
     document.getElementById("progress").style.width =
-        ((currentQuestion) / 10) * 100 + "%";
+        (currentQuestion / 10) * 100 + "%";
 
     q.options.forEach((option, index) => {
         let btn = document.createElement("button");
@@ -160,15 +175,26 @@ function loadQuestion() {
 
 function selectAnswer(index) {
     const q = selectedQuestions[currentQuestion];
+    const buttons = Array.from(document.getElementsByClassName("option"));
+
+    buttons.forEach((btn, i) => {
+        btn.disabled = true;
+
+        if (i === q.answer) {
+            btn.classList.add("correct");
+        }
+
+        if (i === index && index !== q.answer) {
+            btn.classList.add("wrong");
+        }
+    });
 
     if (index === q.answer) {
         score++;
     }
 
     document.getElementById("explanation").innerText = q.explanation;
-
-    Array.from(document.getElementsByClassName("option"))
-        .forEach(btn => btn.disabled = true);
+    document.getElementById("nextBtn").style.display = "block";
 }
 
 function nextQuestion() {
@@ -195,8 +221,8 @@ function finishQuiz() {
         <p style="margin:15px 0;font-size:18px;font-weight:600;">
         Your Score: ${score}/10
         </p>
-        <button class="next" onclick="window.print()">Print Certificate</button>
-        <button class="next" onclick="location.href='leaderboard.html'">
+        <button class="next" style="display:block" onclick="window.print()">Print Certificate</button>
+        <button class="next" style="display:block" onclick="location.href='leaderboard.html'">
         View Leaderboard
         </button>
     `;
@@ -210,4 +236,5 @@ loadQuestion();
 
 </body>
 </html>
+
 
