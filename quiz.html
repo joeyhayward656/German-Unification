@@ -3,60 +3,65 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>German Quiz</title>
+<title>German Language Quiz</title>
 
 <style>
+/* ================= BACKGROUND ================= */
 body {
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #000000, #1a1a1a);
   color: white;
   text-align: center;
   overflow-x: hidden;
+  background: linear-gradient(-45deg, #000000, #1a1a1a, #330000, #1a0000);
+  background-size: 400% 400%;
+  animation: gradientMove 12s ease infinite;
 }
 
-/* Animated German Glow */
-body::before {
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Gold Glow Overlay */
+body::after {
   content: "";
   position: fixed;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle at 30% 30%, rgba(255,0,0,0.2), transparent 40%),
-              radial-gradient(circle at 70% 70%, rgba(255,215,0,0.2), transparent 40%);
-  animation: moveGlow 10s infinite alternate ease-in-out;
-  z-index: -1;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, rgba(255,215,0,0.08), transparent 60%);
+  pointer-events: none;
 }
 
-@keyframes moveGlow {
-  0% { transform: translate(-10%, -10%); }
-  100% { transform: translate(10%, 10%); }
-}
-
+/* ================= GENERAL ================= */
 h1 {
-  color: #ffcc00;
+  color: gold;
   margin-top: 20px;
+  text-shadow: 0 0 15px gold;
 }
 
 .container {
-  max-width: 700px;
+  max-width: 750px;
   margin: auto;
   padding: 20px;
 }
 
+/* ================= QUESTION BOX ================= */
 .question-box {
-  background: #111;
-  padding: 20px;
-  border-radius: 15px;
-  box-shadow: 0 0 15px rgba(255,0,0,0.4);
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(10px);
+  padding: 25px;
+  border-radius: 18px;
+  box-shadow: 0 0 25px rgba(255,0,0,0.4);
   margin-bottom: 20px;
 }
 
 button {
-  display: block;
   width: 100%;
   margin: 10px 0;
   padding: 12px;
-  border-radius: 10px;
+  border-radius: 12px;
   border: none;
   font-size: 16px;
   cursor: pointer;
@@ -64,23 +69,19 @@ button {
 }
 
 .option-btn {
-  background: #222;
+  background: #111;
   color: white;
+  border: 1px solid gold;
 }
 
 .option-btn:hover {
-  background: #ff0000;
+  background: #8b0000;
 }
 
-.correct {
-  background: #28a745 !important;
-}
+.correct { background: #28a745 !important; }
+.wrong { background: #dc3545 !important; }
 
-.wrong {
-  background: #dc3545 !important;
-}
-
-/* Indicator Lights */
+/* ================= INDICATOR LIGHTS ================= */
 .lights {
   margin: 15px 0;
 }
@@ -97,45 +98,87 @@ button {
 .green { background: #28a745; }
 .red { background: #dc3545; }
 
-/* Leaderboard */
+/* ================= LEADERBOARD ================= */
 .leaderboard {
-  background: #111;
-  padding: 15px;
-  border-radius: 15px;
+  background: rgba(0,0,0,0.8);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 0 20px rgba(255,215,0,0.4);
   margin-top: 20px;
-  box-shadow: 0 0 15px rgba(255,215,0,0.4);
 }
 
 .leaderboard h2 {
-  color: #ffcc00;
+  color: gold;
 }
 
 .leaderboard p {
   margin: 5px 0;
 }
 
-/* Certificate */
+/* ================= CERTIFICATE ================= */
 .certificate {
-  background: white;
-  color: black;
-  padding: 30px;
-  border-radius: 15px;
-  margin-top: 20px;
   display: none;
-  box-shadow: 0 0 20px gold;
+  margin-top: 30px;
+  padding: 40px;
+  border-radius: 20px;
+  background: linear-gradient(white, #f5f5f5);
+  color: black;
+  box-shadow: 0 0 40px gold;
+  border: 8px solid black;
+  position: relative;
+}
+
+.certificate::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 15px;
+  background: linear-gradient(to right, black, red, gold);
 }
 
 .certificate h2 {
-  color: black;
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.certificate h3 {
+  font-size: 26px;
+  margin: 15px 0;
+}
+
+.certificate .seal {
+  width: 90px;
+  height: 90px;
+  background: radial-gradient(circle, gold, #cc9900);
+  border-radius: 50%;
+  margin: 20px auto;
+  box-shadow: 0 0 15px gold;
+  line-height: 90px;
+  font-weight: bold;
+  font-size: 30px;
 }
 
 .cert-btn {
-  background: gold;
-  color: black;
+  background: linear-gradient(to right, black, red, gold);
+  color: white;
   font-weight: bold;
 }
 
-/* Responsive */
+/* Print Mode */
+@media print {
+  body * { visibility: hidden; }
+  .certificate, .certificate * { visibility: visible; }
+  .certificate {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}
+
+/* ================= RESPONSIVE ================= */
 @media (max-width: 600px) {
   .container {
     padding: 10px;
@@ -146,7 +189,7 @@ button {
 
 <body>
 
-<h1>🇩🇪 German Language Quiz 🇩🇪</h1>
+<h1>🇩🇪 German Language Mastery Quiz 🇩🇪</h1>
 
 <div class="container">
 
@@ -164,20 +207,29 @@ button {
     <div id="leaderboardList"></div>
   </div>
 
+  <!-- PREMIUM CERTIFICATE -->
   <div class="certificate" id="certificate">
-    <h2>🎓 Certificate of Achievement 🎓</h2>
-    <p>This certifies that</p>
+    <h2>Certificate of Excellence</h2>
+    <p>This proudly certifies that</p>
     <h3 id="certName"></h3>
-    <p>has successfully completed the German Quiz</p>
-    <p>Score: <span id="certScore"></span></p>
-    <button class="cert-btn" onclick="window.print()">Print Certificate</button>
+    <p>has successfully completed the</p>
+    <h2>German Language Mastery Quiz</h2>
+
+    <div class="seal">🇩🇪</div>
+
+    <p>With an outstanding score of</p>
+    <h3 id="certScore"></h3>
+
+    <p style="margin-top:30px;">Awarded with distinction</p>
+
+    <button class="cert-btn" onclick="window.print()">Download / Print Certificate</button>
   </div>
 
 </div>
 
 <script src="questions.js"></script>
-<script>
 
+<script>
 let currentQuestion = 0;
 let score = 0;
 let playerName = localStorage.getItem("playerName") || "Player";
@@ -267,7 +319,6 @@ function showCertificate() {
 
 displayLeaderboard();
 loadQuestion();
-
 </script>
 
 </body>
